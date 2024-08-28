@@ -12,19 +12,26 @@ const App: React.FC = () => {
   };
 
   return (
-    <div>
-      <h1>Product Management</h1>
-      {showForm || editingProduct ? (
-        <ProductForm 
-          initialProduct={editingProduct} 
-          onSuccess={handleFormSuccess} 
-        />
-      ) : (
-        <>
-          <ProductList onEdit={setEditingProduct} />
-          <button onClick={() => setShowForm(true)}>Add New Product</button>
-        </>
-      )}
+    <div className="app-container">
+      <div className="content">
+        <h1 className="text-3xl font-bold mb-4 ">Product Management</h1>
+        {showForm || editingProduct ? (
+          <ProductForm 
+            initialProduct={editingProduct} 
+            onSuccess={handleFormSuccess} 
+          />
+        ) : (
+          <>
+            <ProductList onEdit={setEditingProduct} />
+            <button 
+              className="btn btn-primary mt-4" 
+              onClick={() => setShowForm(true)}
+            >
+              Add New Product
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 };

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { addProduct, updateProduct } from '../features/product';
 import { AppDispatch } from '../app/store';
+import '../index.css';
 
 interface ProductFormProps {
   initialProduct?: {
@@ -43,8 +44,9 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialProduct, onSuccess }) 
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="product-form" onSubmit={handleSubmit}>
       <input
+        className="input-field"
         type="text"
         name="product_name"
         value={product.product_name}
@@ -53,6 +55,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialProduct, onSuccess }) 
         required
       />
       <input
+        className="input-field"
         type="text"
         name="category"
         value={product.category}
@@ -61,6 +64,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialProduct, onSuccess }) 
         required
       />
       <input
+        className="input-field"
         type="number"
         name="price"
         value={product.price}
@@ -69,13 +73,14 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialProduct, onSuccess }) 
         required
       />
       <input
+        className="input-field"
         type="number"
         name="discount"
         value={product.discount || ''}
         onChange={handleChange}
         placeholder="Discount"
       />
-      <button type="submit">{product.id ? 'Update' : 'Add'} Product</button>
+      <button className="submit-btn" type="submit">{product.id ? 'Update' : 'Add'} Product</button>
     </form>
   );
 };
