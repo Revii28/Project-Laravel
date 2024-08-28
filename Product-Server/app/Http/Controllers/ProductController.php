@@ -21,45 +21,61 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'product_name' => 'required|string|max:150',
-            'category' => 'required|string|max:100',
+            'product_name' => 'required|string|max:255',
+            'category' => 'required|string|max:255',
             'price' => 'required|numeric',
             'discount' => 'nullable|numeric',
         ]);
 
-        return Product::create($request->all());
+        $product = Product::create($request->all());
+
+        return response()->json($product, 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Product $product)
+    public function show($id)
     {
+        $product = Product::find($id);
+        if (!$product) {
+            return response()->json(['message' => 'Product not found'], 404);
+        }
         return $product;
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, $id)
     {
         $request->validate([
-            'product_name' => 'required|string|max:150',
-            'category' => 'required|string|max:100',
+            'product_name' => 'required|string|max:255',
+            'category' => 'required|string|max:255',
             'price' => 'required|numeric',
             'discount' => 'nullable|numeric',
         ]);
 
+        $product = Product::find($id);
+        if (!$product) {
+            return response()->json(['message' => 'Product not found'], 404);
+        }
         $product->update($request->all());
-        return $product;
+
+        return response()->json($product, 200);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Product $product)
+    public function destroy($id)
     {
+        $product = Product::find($id);
+        if (!$product) {
+            return response()->json(['message' => 'Product not found'], 404);
+        }
         $product->delete();
-        return response(null, 204);
+
+        return response()->json(null, 204);
     }
 }

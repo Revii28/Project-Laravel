@@ -21,26 +21,63 @@ const initialState: ProductState = {
   error: null,
 };
 
-export const fetchProducts = createAsyncThunk('products/fetchProducts', async () => {
-  const response = await axios.get('http://localhost:8000/api/products');
-  return response.data;
+// Fetch Products
+export const fetchProducts = createAsyncThunk('products/fetchProducts', async (_, { rejectWithValue }) => {
+  try {
+    const response = await axios.get('http://localhost:8000/api/products');
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch products');
+    } else {
+      return rejectWithValue('An unknown error occurred');
+    }
+  }
 });
 
-export const addProduct = createAsyncThunk('products/addProduct', async (product: Product) => {
-  const response = await axios.post('http://localhost:8000/api/products', product);
-  return response.data;
+// Add Product
+export const addProduct = createAsyncThunk('products/addProduct', async (product: Product, { rejectWithValue }) => {
+  try {
+    const response = await axios.post('http://localhost:8000/api/products', product);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to add product');
+    } else {
+      return rejectWithValue('An unknown error occurred');
+    }
+  }
 });
 
-export const updateProduct = createAsyncThunk('products/updateProduct', async (product: Product) => {
-  const response = await axios.put(`http://localhost:8000/api/products/${product.id}`, product);
-  return response.data;
+// Update Product
+export const updateProduct = createAsyncThunk('products/updateProduct', async (product: Product, { rejectWithValue }) => {
+  try {
+    const response = await axios.put(`http://localhost:8000/api/products/${product.id}`, product);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to update product');
+    } else {
+      return rejectWithValue('An unknown error occurred');
+    }
+  }
 });
 
-export const deleteProduct = createAsyncThunk('products/deleteProduct', async (id: number) => {
-  await axios.delete(`http://localhost:8000/api/products/${id}`);
-  return id;
+// Delete Product
+export const deleteProduct = createAsyncThunk('products/deleteProduct', async (id: number, { rejectWithValue }) => {
+  try {
+    await axios.delete(`http://localhost:8000/api/products/${id}`);
+    return id;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to delete product');
+    } else {
+      return rejectWithValue('An unknown error occurred');
+    }
+  }
 });
 
+// Slice
 const productSlice = createSlice({
   name: 'products',
   initialState,
@@ -56,10 +93,13 @@ const productSlice = createSlice({
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.error.message || 'Failed to fetch products';
+        state.error = action.payload as string;
       })
       .addCase(addProduct.fulfilled, (state, action) => {
         state.products.push(action.payload);
+      })
+      .addCase(addProduct.rejected, (state, action) => {
+        state.error = action.payload as string;
       })
       .addCase(updateProduct.fulfilled, (state, action) => {
         const index = state.products.findIndex(product => product.id === action.payload.id);
@@ -67,8 +107,14 @@ const productSlice = createSlice({
           state.products[index] = action.payload;
         }
       })
+      .addCase(updateProduct.rejected, (state, action) => {
+        state.error = action.payload as string;
+      })
       .addCase(deleteProduct.fulfilled, (state, action) => {
         state.products = state.products.filter(product => product.id !== action.payload);
+      })
+      .addCase(deleteProduct.rejected, (state, action) => {
+        state.error = action.payload as string;
       });
   },
 });
